@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mynavi Advisor Flow</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<style>
+/* ----------------------------------------------------
+   🌈 BACKGROUND（ピンク→ブルー→ホワイト）
+---------------------------------------------------- */
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #ffe8f0, #e5f0ff 40%, #ffffff);
+    font-family: "Poppins","Noto Sans JP",sans-serif;
+    color: #1a2c45;
+    overflow-x: hidden;
+    line-height: 1.8;
+}
+
+/* ----------------------------------------------------
+   🌈 TOP HEADER（浮遊・光エフェクト）
+---------------------------------------------------- */
+.top-header {
+    background: linear-gradient(135deg, #ff5f8a, #6a8bff);
+    color: #fff;
+    padding: 110px 20px 120px;
+    text-align: center;
+    animation: fadeIn 1.2s ease, floatUp 3s ease-in-out infinite;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    position: relative;
+    overflow: hidden;
+}
+.top-header h1 {
+    font-size: 3rem;
+    letter-spacing: 2px;
+    margin: 0;
+    font-weight: 800;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+.top-header::before,
+.top-header::after {
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    animation: swirl 8s linear infinite;
+}
+.top-header::before {
+    top:-60px; left:-60px;
+    width:180px; height:180px;
+    background: radial-gradient(circle,rgba(255,255,255,0.45),rgba(255,255,255,0));
+}
+.top-header::after {
+    bottom:-60px; right:-60px;
+    width:200px; height:200px;
+    background: radial-gradient(circle,rgba(255,255,255,0.35),rgba(255,255,255,0));
+    animation-direction: reverse;
+}
+
+/* ----------------------------------------------------
+   🌈 CARD（透明＋浮遊）
+---------------------------------------------------- */
+.card {
+    max-width: 980px;
+    margin: 80px auto;
+    padding: 50px 60px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.45);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 1s ease;
+}
+.card::before {
+    content:"";
+    position:absolute;
+    top:-40px; right:-40px;
+    width:150px; height:150px;
+    border-radius:50%;
+    background: radial-gradient(circle,rgba(255,120,150,0.25),rgba(255,120,150,0));
+    animation: swirl 6s linear infinite;
+}
+
+/* ----------------------------------------------------
+   🌈 見出し（高級ネイビー）
+---------------------------------------------------- */
+h2 {
+    font-size: 2rem;
+    margin-top:0;
+    margin-bottom:18px;
+    color: #102033 !important;
+    font-weight: 800;
+}
+h3 {
+    font-size: 1.35rem;
+    margin-bottom:14px;
+    color: #152a46 !important;
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------
+   🌈 ESタイトル強調（effect-title）
+---------------------------------------------------- */
+.effect-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f2440 !important;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+/* ----------------------------------------------------
+   TEXT
+---------------------------------------------------- */
+p, li {
+    font-size: 1.1rem;
+    color: #1a2c45 !important;
+    line-height: 1.9;
+}
+
+/* ----------------------------------------------------
+   SECTION DIVIDER
+---------------------------------------------------- */
+.section-glow {
+    width:100%; height:4px;
+    margin:100px 0;
+    background: linear-gradient(90deg,#ff5f8a,#6a8bff,#ff5f8a);
+    opacity:0.55;
+    border-radius: 2px;
+}
+
+/* ----------------------------------------------------
+   TIMELINE
+---------------------------------------------------- */
+.timeline {
+    position: relative;
+    max-width: 980px;
+    margin: 40px auto 120px;
+    padding-left: 20px;
+}
+.timeline.intro::before {
+    content:"";
+    position:absolute; left:32px; top:0;
+    width:4px; height:100%;
+    background:#ff5f8a;
+    border-radius:2px;
+}
+.timeline.web::before {
+    content:"";
+    position:absolute; left:32px; top:0;
+    width:4px; height:100%;
+    background:#6a8bff;
+}
+
+/* STEP */
+.step {
+    position:relative;
+    margin:50px 0 50px 80px;
+    padding:32px 42px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.95);
+    box-shadow:0 12px 26px rgba(0,0,0,0.12);
+    border:1px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(8px);
+    color:#1a2c45;
+}
+.step::before {
+    content:"";
+    position:absolute;
+    left:-48px; top:22px;
+    width:22px; height:22px;
+    background:#fff;
+    border-radius:50%;
+    border:4px solid #ff5f8a;
+    box-shadow:0 0 12px rgba(255,120,150,0.45);
+}
+.step.web::before {
+    border:4px solid #6a8bff;
+    box-shadow:0 0 12px rgba(106,139,255,0.45);
+}
+
+/* ----------------------------------------------------
+   ANIMATION
+---------------------------------------------------- */
+@keyframes fadeIn {0%{opacity:0;transform:translateY(40px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes slideUp {0%{opacity:0;transform:translateY(40px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes swirl {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+@keyframes floatUp {0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+
+.fade { opacity:0; }
+.slideL { opacity:0; transform:translateX(-80px); }
+.slideR { opacity:0; transform:translateX(80px); }
+.scaleUp { opacity:0; transform:scale(0.85); }
+
+</style>
+</head>
+<body>
+
+<!-- ⭐ 完全統合ヘッダー -->
+<header class="top-header">
+    <h1>WEBイベント × 新卒紹介サービス 企画概要</h1>
+</header>
+
+<!-- ----------------------------------------------------
+     🎀 感謝メッセージ
+---------------------------------------------------- -->
+<div class="card fade">
+    <h2>■キャリアアドバイザーの皆様へ</h2>
+    <p>
+        この度は本企画にご協力いただき、誠にありがとうございます。<br>
+        皆様からのご支援により、学生にとって価値あるコンテンツ提供が可能となります。<br>
+        心より感謝申し上げます。
+    </p>
+</div>
+
+<div class="section-glow"></div>
+
+<!-- ----------------------------------------------------
+     🎯 本施策の目的
+---------------------------------------------------- -->
+<div class="card slideL">
+    <h2>■本施策の目的</h2>
+    <p>
+        【WEBイベント】WEBイベントの来場者数・行動量の増加<br>
+        【新卒紹介】サービスの認知拡大によるサービス利用者の向上<br>
+         →本施策の狙いは、WEBイベントと新卒紹介サービスの連携を通じて、<br>
+               マイナビのサービスの幅広さを学生に訴求することです。<br>
+    </p>
+</div>
+
+<div class="section-glow"></div>
+
+<!-- ----------------------------------------------------
+     📝 本施策の概要
+---------------------------------------------------- -->
+<div class="card slideR">
+    <h2>■ 本施策の概要</h2>
+    <p>
+        新卒紹介サービス会員学生が内定獲得時のエントリーシート（「自己PR」「学生時代に力を入れたこと」）を<br>
+        個人情報マスキング後WEBイベントページ上に掲載します。<br>
+        ※個人情報はすべてマスキング処理を行います。
+    </p>
+</div>
+
+<div class="section-glow"></div>
+
+<!-- ----------------------------------------------------
+     ⭐ 本企画の実施効果
+---------------------------------------------------- -->
+<div class="card slideL">
+    <h2>■本企画の実施効果について</h2>
+
+    <p>
+        <span class="effect-title">① WEBイベントの来場者数・行動量の向上</span><br>
+        学生が関心を持ちやすい「ES事例」を閲覧できることで、イベント参加への動機づけが高まります。<br>
+        ES閲覧後に関連企業情報へ誘導することで、イベント内での行動（視聴・出席票提出等）を強化します。<br><br>
+
+        <span class="effect-title">② 新卒紹介サービスの認知拡大・利用促進</span><br>
+        ES事例の掲載元として「新卒紹介サービス」を明示することで認知が拡大。<br>
+        閲覧者との接点が増え、サービス利用促進につながります。<br><br>
+
+        <span class="effect-title">③ マイナビブランドの価値向上</span><br>
+        各サービスの横の連携が学生に伝わることで、ブランド全体の価値向上につながります。
+    </p>
+</div>
+
+<div class="section-glow"></div>
+
+<!-- ----------------------------------------------------
+     🌟 企画全体の大見出し
+---------------------------------------------------- -->
+<div class="card fade" style="text-align:center; margin-bottom:40px;">
+    <h2 style="
+        font-size:2.4rem;
+        letter-spacing:0.08em;
+        color:#0f2440;
+        margin:0;
+    ">
+        本企画の進行タスク
+    </h2>
+</div>
+
+<!-- ----------------------------------------------------
+     🔷 新卒紹介事業部タスク
+---------------------------------------------------- -->
+<div class="card fade" style="text-align:center; margin-bottom:40px;">
+    <h2 style="
+        font-size:2.0rem;
+        color:#102033;
+    ">
+        ～新卒紹介事業部のタスク～
+    </h2>
+</div>
+
+<!-- ----------------------------------------------------
+     🕒 ①〜⑤（タイムライン INTRO）
+---------------------------------------------------- -->
+<div class="timeline intro">
+
+    <div class="step intro fade">
+        <h3>① キャリアアドバイザー担当の内定学生へ同意書の送付</h3>
+        <p>学生へES公開同意書（WEBフォーム）を送付。<br>
+→ <a href="https://survey.mynavi.jp/cre/?enq=HWJcl91NinU%3d">学生送付用の同意書（WEBフォーム）はこちら</a>
+
+
+</p>
+    </div>
+
+    <div class="step intro slideL">
+        <h3>② 同意書取得後、個人情報・要配慮個人情報のマスキング後のESを準備</h3>
+        <p>
+　同意書取得後、下記マスキングルールを参考に個人情報のマスキングを行う。<br>
+　 → <a href="#mask">マスキングルールを見る</a>
+        </p>
+    </div>
+
+    <div class="step intro slideR">
+        <h3>③ マスキング作業終了後、SharePointへ書類格納</h3>
+        <p>
+            マスキング作業が完了後、SharePointに下記手順にて書類格納お願い致します。<br>
+ ①新規フォルダを作成<br>
+ ②フォルダ名は「営業担当者名／内定先業種」で作成<br>
+ ③作成したフォルダへ下記書類を格納<br>
+・マスキング完了後のES<br>
+・学生から取得済み同意書<br>
+ → <a href="#mask">SharePointへ格納する</a>
+        </p>
+    </div>
+
+    <div class="step intro slideL">
+        <h3>④ SharePoint 格納後、新卒紹介事業支援部へ連絡</h3>
+        <p>
+            SharePoint格納後、下記管理表に格納した学生の情報を記載いただき、<br>
+            入力完了後、コメントにて下記宛名をメンションお願い致します。<br>
+            「yamazaki.yuuta.jk@mynavi.jp」「takahira.shunji.sj@mynavi.jp」<br>
+             → <a href="#"">管理表に記入する</a>
+        </p>
+    </div>
+
+    <div class="step intro slideR">
+        <h3>⑤ 新卒紹介事業支援部による最終チェック</h3>
+        <p>
+            同意書とマスキング箇所を最終確認し、問題なければWEBイベントへ連携します。
+        </p>
+    </div>
+
+</div>
+
+<div class="section-glow"></div>
+
+<!-- ----------------------------------------------------
+     WEBイベント担当大見出し
+---------------------------------------------------- -->
+<div class="card fade" style="text-align:center; margin-bottom:40px;">
+    <h2 style="font-size:2.0rem; color:#0f2440;">
+       ～WEBイベント担当のタスク～
+    </h2>
+</div>
+
+<!-- ----------------------------------------------------
+     WEBイベント担当タイムライン
+---------------------------------------------------- -->
+<div class="timeline web">
+
+    <div class="step web slideL">
+        <h3>⑥ 特設サイト反映内容の確認</h3>
+        <p>マスキング漏れなどの最終チェックを実施。</p>
+    </div>
+
+    <div class="step web slideR">
+        <h3>⑦ テストページでの確認</h3>
+        <p>外部関連会社と協力し、反映内容を最終確認。</p>
+    </div>
+
+    <div class="step web slideL">
+        <h3>⑧ 本番サイトへ反映</h3>
+        <p>問題なければ正式公開。</p>
+    </div>
+
+</div>
+
+<div class="section-glow"></div>
+<!-- ===========================
+     マスキングルール（PDF内容完全反映）
+=========================== -->
+<div id="mask" class="card blue">
+    <h2>個人情報削除ルール（正式版）</h2>
+
+    <p>
+        以下は提出資料「エントリーシート公開用 個人情報削除ルール」に基づき作成しています。
+    </p>
+
+    <h3>■ 基本方針</h3>
+    <ul>
+        <li>個人を特定できる情報はすべて削除または匿名化する。</li>
+        <li>所属や活動先などから間接的に特定される情報も削除。</li>
+        <li>削除箇所は「[削除]」「◯◯大学」などに置換。</li>
+    </ul>
+
+    <h3>■ 削除・匿名化すべき項目</h3>
+    <table class="mask-table" style="width:100%; border-collapse:collapse; margin-top:20px; font-size:1rem;">
+        <tr style="background:#e6eaf0; color:#0f2440; font-weight:bold;">
+            <th style="padding:10px; border:1px solid #d0d5dd;">項目</th>
+            <th style="padding:10px; border:1px solid #d0d5dd;">例</th>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">氏名</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">田中太郎 → [氏名削除]</td>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">住所</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">東京都大田区 → [地域削除]</td>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">大学名</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">◯◯大学 → 地方国立大学文系</td>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">研究室</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">山田研究室 → 経営学ゼミ</td>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">バイト/インターン</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">スターバックス → 大手カフェチェーン</td>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">SNS/URL</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">@id → [SNS削除], URL→[URL削除]</td>
+        </tr>
+        <tr>
+            <td style="padding:10px; border:1px solid #d0d5dd;">資格</td>
+            <td style="padding:10px; border:1px solid #d0d5dd;">TOEIC900点 → 英語資格高得点</td>
+        </tr>
+    </table>
+
+    <div class="check-box" style="margin-top:30px;">
+        <h3>■ 公開前チェックリスト</h3>
+        <ul>
+            <li>氏名が残っていないか</li>
+            <li>学校名・活動団体が具体的すぎないか</li>
+            <li>他人の氏名が含まれていないか</li>
+            <li>内定先企業名が書かれていないか</li>
+            <li>住所・年齢・連絡先が残っていないか</li>
+            <li>SNS/URLが削除されているか</li>
+            <li>資格・受賞歴が個人特定につながらないか</li>
+            <li>削除後も文脈が自然か</li>
+        </ul>
+    </div>
+
+    <div class="qa-box" style="margin-top:30px;">
+        <h3>■ よくある質問</h3>
+
+        <p><strong>Q. TOEICスコアは削除すべき？</strong><br>
+        A. 個人特定の恐れがあるため「英語資格高得点」と抽象化します。</p>
+
+        <p><strong>Q. ポートフォリオURLは残せる？</strong><br>
+        A. 個人特定に直結するため必ず削除してください。</p>
+
+        <p><strong>Q. 削除により文章の意味が崩れる場合は？</strong><br>
+        A. 「個人情報に関する記述を削除しています」等の補足を入れてください。</p>
+    </div>
+</div>
+
+<!-- END -->
+<div style="text-align:center; padding-bottom:120px; opacity:0.6;">
+    <p style="font-size:1.1rem; color:#0f2440;">— END OF DOCUMENT —</p>
+</div>
+
+<!-- ===========================
+     GSAP Animation Controller
+=========================== -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.utils.toArray(".fade").forEach(el=>{
+    gsap.fromTo(el,{opacity:0, y:40},{
+        opacity:1, y:0, duration:1.2,
+        ease:"power3.out",
+        scrollTrigger:el
+    });
+});
+
+gsap.utils.toArray(".slideL").forEach(el=>{
+    gsap.fromTo(el,{opacity:0, x:-120},{
+        opacity:1, x:0, duration:1.2,
+        ease:"expo.out",
+        scrollTrigger:el
+    });
+});
+
+gsap.utils.toArray(".slideR").forEach(el=>{
+    gsap.fromTo(el,{opacity:0, x:120},{
+        opacity:1, x:0, duration:1.2,
+        ease:"expo.out",
+        scrollTrigger:el
+    });
+});
+
+gsap.utils.toArray(".scaleUp").forEach(el=>{
+    gsap.fromTo(el,{opacity:0, scale:0.85},{
+        opacity:1, scale:1, duration:1.3,
+        ease:"power3.out",
+        scrollTrigger:el
+    });
+});
+</script>
+
+</body>
+</html>
